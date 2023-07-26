@@ -28,3 +28,18 @@
 .lightPurple {
   color: #e011a7;
 }
+
+.button {
+  margin-top: 32px;
+  width: 100%;
+  max-width: 400px;
+  height: 48px;
+  border-radius: 8px;
+  background-color: #e011a7;
+  color: white;
+  font-size: 1.125rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  padding: 0 16px;
+}

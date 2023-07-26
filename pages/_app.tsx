@@ -1,24 +1,28 @@
+import React from "react";
+import type { AppProps } from "next/app";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import { ThirdwebProvider } from "@thirdweb-dev/react/solana";
 import { Network } from "@thirdweb-dev/sdk/solana";
-import type { AppProps } from "next/app";
+import { PhantomWalletAdapter } from "@solana/wallet-adapter-wallets";
 import "../styles/globals.css";
+
 
 // Change the network to the one you want to use: "mainnet-beta", "testnet", "devnet", "localhost" or your own RPC endpoint
 export const network: Network = "devnet";
-const clientId = process.env.NEXT_CLIENT_ID as string;
+export const wallet = new PhantomWalletAdapter();
+export const domain = "http://localhost:3000";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ThirdwebProvider
+      network={network}
       authConfig={{
         // This domain should match the backend
-        domain: process.env.NEXT_PUBLIC_THIRDWEB_AUTH_DOMAIN || "",
+        domain: domain,
         // Pass the URL of the auth endpoints
         authUrl: "/api/auth",
+        loginRedirectUrl: "/", // The redirect URL after login
       }}
-      network={network}
-      clientId={clientId}
     >
       <WalletModalProvider>
         <Component {...pageProps} />
