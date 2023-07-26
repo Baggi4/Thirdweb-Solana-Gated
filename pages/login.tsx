@@ -7,11 +7,14 @@ import {
   useClaimConditions,
   useClaimNFT,
   useLogin,
+  useLogout,
   useProgram,
   useUser,
 } from "@thirdweb-dev/react/solana";
 import styles from "../styles/Home.module.css";
 import { network } from "./_app";
+import { useRouter } from "next/router";
+import { use, useEffect } from "react";
 require("@solana/wallet-adapter-react-ui/styles.css");
 
 interface MaxClaimableReachedError extends Error {
@@ -25,6 +28,13 @@ const WalletMultiButtonDynamic = dynamic(
 );
 
 const LoginPage: NextPage = () => {
+  const wallet = useWallet();
+  const login = useLogin();
+  const logout = useLogout();
+  const router = useRouter();
+  const user = useUser();
+  const { publicKey, connected, select } = useWallet(); // wallet hook
+
   const { program } = useProgram(
     "i1PKBSVtDD9dmfgJkFNZV61pf7wUknbSrtjyPc1iwR1",
     "nft-drop"
@@ -32,44 +42,28 @@ const LoginPage: NextPage = () => {
   const { mutateAsync: claimNFT, isLoading } = useClaimNFT(program);
   const { data: conditions, isLoading: conditionsIsLoading } =
     useClaimConditions(program);
-  const wallet = useWallet();
   const claim = useClaimNFT(program);
+  console.log(wallet);
 
-  const login = useLogin();
-  const user = useUser();
-  const { publicKey } = useWallet(); // public key of the wallet
+  const handleLogin = async () => {
+    await login(); // login
+    router.push("/"); // redirect to home page
+  };
+  const handleLogout = () => {
+    wallet.disconnect();
+  };
 
   const handleClaimNFT = async () => {
     try {
-      if (wallet.connected) {
-        await claim.mutateAsync({ amount: 1 });
-      } else {
-        console.log("Wallet not connected.");
-      }
+      await claimNFT({ amount: 1 });
     } catch (error: unknown) {
-      if (
-        (
-          function isMaxClaimableReachedError(
-          error: unknown
-        ): error is MaxClaimableReachedError {
-          return (
-            typeof error === "object" &&
-            error !== null &&
-            "message" in error &&
-            error.message ===
-              "Max claimable reached - 3 out of 3 NFTs have been claimed."
-          );
-        })(error) // Check if it's the custom error type
-      ) {
+      if (error instanceof Error) {
         alert("You have reached the maximum limit of 3 claimed NFTs.");
       } else {
         console.error("Error:", error);
       }
     }
   };
-  if (isLoading) return <></>; // loading indicator
-
-  console.log("conditions", conditions); // conditions object
   return (
     <div className={styles.container}>
       <div className={styles.iconContainer}>
@@ -109,9 +103,15 @@ const LoginPage: NextPage = () => {
       <div>
         <div>
           <WalletMultiButtonDynamic />
-          {publicKey && !user && (
-            <button className={styles.button} onClick={() => {}}>
+
+          {!publicKey && (
+            <button className={styles.button} onClick={handleLogin}>
               Login
+            </button>
+          )}
+          {publicKey && (
+            <button className={styles.button} onClick={handleLogout}>
+              Logout
             </button>
           )}
         </div>
