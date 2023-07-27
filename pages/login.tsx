@@ -9,12 +9,13 @@ import {
   useLogin,
   useLogout,
   useProgram,
+  useProgramMetadata,
   useUser,
 } from "@thirdweb-dev/react/solana";
 import { network } from "./_app";
 import { useRouter } from "next/router";
 import { use, useEffect } from "react";
-import Hero  from "../components/Hero";
+import Hero from "../components/Hero";
 import styles from "../styles/Home.module.css";
 import Head from "next/head";
 require("@solana/wallet-adapter-react-ui/styles.css");
@@ -45,16 +46,7 @@ const LoginPage: NextPage = () => {
   const { data: conditions, isLoading: conditionsIsLoading } =
     useClaimConditions(program);
   const claim = useClaimNFT(program);
-  console.log(wallet);
-  console.log(claim);
-  console.log(conditions);
-  console.log(conditionsIsLoading);
-  console.log(isLoading);
-  console.log(user);
-  console.log(connected);
-  console.log(publicKey);
-  console.log(select);
-  console.log(login);
+  
   const handleLogout = () => {
     wallet.disconnect();
   };
@@ -63,13 +55,14 @@ const LoginPage: NextPage = () => {
     try {
       await claimNFT({ amount: 1 });
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        alert("You have reached the maximum limit of 3 claimed NFTs.");
-      } else {
-        console.error("Error:", error);
-      }
+      alert("You have reached the maximum limit of 3 claimed NFTs.");
     }
   };
+  // console.log("useWallet", wallet);
+  // console.log("conditions", conditions);
+  // console.log("user", user);
+  // console.log("useLogin", login );
+  // console.log("useProgramMetadata", program);
   return (
     <>
       <Head>
@@ -82,7 +75,7 @@ const LoginPage: NextPage = () => {
         <div>
           <WalletMultiButtonDynamic />
           {!publicKey && (
-            <button className={styles.button} onClick={() =>{}}>
+            <button className={styles.button} onClick={() => {}}>
               Login
             </button>
           )}
@@ -106,12 +99,17 @@ const LoginPage: NextPage = () => {
         ) : (
           <p className={styles.explain}>
             {conditions?.maxClaimable} / {conditions?.totalAvailableSupply}
+            {conditions?.price.displayValue && (
+              <>
+                {" "}
+                - {parseFloat(conditions?.price.displayValue).toFixed(2)} SOL
+              </>
+            )}
           </p>
         )}
         <div>
           {wallet.connected ? (
             <>
-              <p className={styles.explain}>connected to: {network}</p>
               <pre>
                 Connected Wallet:{" "}
                 {`${publicKey?.toBase58().slice(0, 5)}...${publicKey
@@ -122,7 +120,7 @@ const LoginPage: NextPage = () => {
             </>
           ) : (
             <p className={styles.explain}>
-              To continue, please connect your wallet to devnet network.
+              To continue, please connect your wallet to {network} network.
             </p>
           )}
         </div>
