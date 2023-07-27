@@ -16,13 +16,6 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ThirdwebProvider
       network={network}
-      authConfig={{
-        // This domain should match the backend
-        domain: domain,
-        // Pass the URL of the auth endpoints
-        authUrl: "/api/auth",
-        loginRedirectUrl: "/", // The redirect URL after login
-      }}
     >
       <WalletModalProvider>
         <Component {...pageProps} />

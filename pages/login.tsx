@@ -11,10 +11,12 @@ import {
   useProgram,
   useUser,
 } from "@thirdweb-dev/react/solana";
-import styles from "../styles/Home.module.css";
 import { network } from "./_app";
 import { useRouter } from "next/router";
 import { use, useEffect } from "react";
+import Hero  from "../components/Hero";
+import styles from "../styles/Home.module.css";
+import Head from "next/head";
 require("@solana/wallet-adapter-react-ui/styles.css");
 
 interface MaxClaimableReachedError extends Error {
@@ -44,11 +46,15 @@ const LoginPage: NextPage = () => {
     useClaimConditions(program);
   const claim = useClaimNFT(program);
   console.log(wallet);
-
-  const handleLogin = async () => {
-    await login(); // login
-    router.push("/"); // redirect to home page
-  };
+  console.log(claim);
+  console.log(conditions);
+  console.log(conditionsIsLoading);
+  console.log(isLoading);
+  console.log(user);
+  console.log(connected);
+  console.log(publicKey);
+  console.log(select);
+  console.log(login);
   const handleLogout = () => {
     wallet.disconnect();
   };
@@ -65,47 +71,18 @@ const LoginPage: NextPage = () => {
     }
   };
   return (
-    <div className={styles.container}>
-      <div className={styles.iconContainer}>
-        <Image
-          src="/thirdweb.svg"
-          height={75}
-          width={115}
-          style={{
-            objectFit: "contain",
-          }}
-          alt="thirdweb"
-        />
-        <Image
-          width={75}
-          height={75}
-          src="/sol.png"
-          className={styles.icon}
-          alt="sol"
-        />
-      </div>
-      <h1 className={styles.h1}>Solana, meet thirdweb 👋</h1>
-      <p className="text-red">
-        Explore what you can do with thirdweb&rsquo;s brand new Solana Gated
-        Website{" "}
-      </p>
-      <p className={styles.explain}>
-        you must own a thirdweb NFT to access this{" "}
-        <b>
-          <Link href="/" className={styles.lightPurple}>
-            Protected Page
-          </Link>
-        </b>
-      </p>
-      <p className={styles.explain}>
-        you can claim your NFT by clicking the button below 👇
-      </p>
-      <div>
+    <>
+      <Head>
+        <title>Thirdweb | Login</title>
+        <meta name="description" content="Login to Thirdweb" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <Hero />
+      <div className={styles.container}>
         <div>
           <WalletMultiButtonDynamic />
-
           {!publicKey && (
-            <button className={styles.button} onClick={handleLogin}>
+            <button className={styles.button} onClick={() =>{}}>
               Login
             </button>
           )}
@@ -150,7 +127,7 @@ const LoginPage: NextPage = () => {
           )}
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
